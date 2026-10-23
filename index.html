@@ -90,6 +90,7 @@ dialog::backdrop{background:rgba(10,8,30,.7)}
 
 <script>
 var CATS={
+ driving:{label:"Driving",icon:"🚗",items:["Kart"]},
  casual:{label:"Casual",icon:"🐍",items:["Snake Apple"]}
 };
 var ALL=[],BY={};
@@ -161,11 +162,12 @@ function openGame(id){
  syncDlgFav();
  if(dlg.showModal)dlg.showModal();else dlg.setAttribute("open","");
 }
-var GAME_URL="https://script.google.com/macros/s/AKfycbymKWcUrgUql0KiwDqccDBMbYJB8_gxtlKCbQ5C6lfGB90kOJh4MpLqhMGWjtF7TyBskw/exec";
-var gameWin;
+var GAME_URLS={"snake-apple":"https://script.google.com/macros/s/AKfycbymKWcUrgUql0KiwDqccDBMbYJB8_gxtlKCbQ5C6lfGB90kOJh4MpLqhMGWjtF7TyBskw/exec","kart":"https://script.google.com/macros/s/AKfycbxb8isaXXwqY7h3OqafbfonnaOEmyfyK8ZQoMvgT-HGwUSfpJoK5Aim1Ca3fvKvEqxj/exec"};
+var gameWins={};
 function playFull(){
+ var id=cur.id,GAME_URL=GAME_URLS[id],gameWin=gameWins[id];
  if(gameWin&&!gameWin.closed){gameWin.focus();return}
- gameWin=window.open();
+ gameWin=gameWins[id]=window.open();
  if(!gameWin){alert("The new tab was blocked. Allow pop-ups for this page and try again.");return}
  gameWin.document.body.style.margin="0";
  gameWin.document.body.style.height="100vh";
