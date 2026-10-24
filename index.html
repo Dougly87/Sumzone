@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sumzone – Free Online Play in Your Browser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#dbe3ea;--surface:#e8eef3;--ink:#1c2833;--muted:#566a7b;--line:#bfccd7;--accent:#23707c;--accent-ink:#ffffff;--hot:#c26a3d;--new:#2f8a6b;--shadow:0 6px 18px rgba(28,40,51,.14);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e161e;--surface:#16212b;--ink:#d5e0e9;--muted:#8095a7;--line:#233240;--accent:#58b4c0;--accent-ink:#08181d;--hot:#d98456;--new:#4aa886;--shadow:0 6px 18px rgba(0,0,0,.4);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e161e;--surface:#16212b;--ink:#d5e0e9;--muted:#8095a7;--line:#233240;--accent:#58b4c0;--accent-ink:#08181d;--hot:#d98456;--new:#4aa886;--shadow:0 6px 18px rgba(0,0,0,.4);color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--surface);z-index:30}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--line)}
+.logo{font-weight:800;font-size:1.6rem;letter-spacing:-.04em;color:var(--accent);margin-right:auto}
+.icon-btn{background:var(--bg);border:1px solid var(--line);border-radius:12px;min-width:42px;height:42px;padding:0 12px;font-weight:600}
+.icon-btn:hover{border-color:var(--accent)}
+.layout{display:flex;max-width:1500px;margin:0 auto}
+nav.side{width:220px;flex:none;padding:16px;position:sticky;top:calc(63px + env(safe-area-inset-top,0px));align-self:flex-start;max-height:calc(100vh - 63px);overflow-y:auto}
+nav.side a{display:flex;gap:10px;align-items:center;padding:8px 12px;border-radius:10px;color:var(--muted);font-weight:600}
+nav.side a:hover{background:var(--surface);color:var(--ink)}
+nav.side a.on{background:var(--accent);color:var(--accent-ink)}
+nav.side hr{border:0;border-top:1px solid var(--line);margin:10px 0}
+main{flex:1;min-width:0;padding:16px 16px 40px}
+h1{font-size:clamp(1.8rem,4vw,2.8rem);letter-spacing:-.03em;margin:8px 0 4px;font-weight:800}
+.sub{color:var(--muted);margin:0 0 20px}
+.row{margin-bottom:28px}
+.row-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.row-head h2{font-size:1.3rem;margin:0;letter-spacing:-.02em}
+.row-head h2 a:hover{color:var(--accent)}
+.arrows button{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface)}
+.arrows button:hover{border-color:var(--accent)}
+.scroller{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x proximity;padding:4px 2px 12px;scrollbar-width:thin}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.tile{position:relative;flex:none;width:150px;scroll-snap-align:start;border-radius:18px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow);text-align:left;border:0;padding:0;transition:transform .15s}
+.grid .tile{width:auto}
+.tile:hover{transform:translateY(-3px)}
+.art{color:#fff;aspect-ratio:1;display:grid;place-items:center;font-size:3.4rem}
+.tile .name{padding:8px 10px 10px;font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{position:absolute;top:8px;left:8px;font-size:.7rem;font-weight:800;padding:2px 8px;border-radius:99px;color:#fff}
+.badge.hot{background:var(--hot)}.badge.new{background:var(--new)}
+.heart{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;border:0;background:rgba(20,18,46,.45);color:#fff;font-size:1rem;display:grid;place-items:center}
+.heart.on{background:var(--accent)}
+.empty{padding:28px;border:2px dashed var(--line);border-radius:18px;color:var(--muted);text-align:center}
+.seo{max-width:70ch;margin-top:24px;color:var(--muted)}
+.seo h2{color:var(--ink);font-size:1.2rem}
+footer{border-top:1px solid var(--line);padding:20px 16px;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;color:var(--muted);font-size:.9rem}
+footer a:hover{color:var(--accent)}
+dialog{width:min(900px,94vw);border:0;border-radius:20px;padding:0;background:var(--surface);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+dialog.wide{width:min(1040px,96vw)}
+dialog::backdrop{background:rgba(10,8,30,.7)}
+.dlg-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.dlg-head h3{margin:0 auto 0 0;font-size:1.2rem}
+.stage{aspect-ratio:16/9;margin:16px;border-radius:14px;display:grid;place-items:center;text-align:center;color:#fff;padding:16px}
+.stage b{display:block;font-size:4rem}
+#menuBtn{display:none}
+@media (max-width:820px){
+ #menuBtn{display:inline-block}
+ nav.side{position:fixed;left:0;top:0;bottom:0;max-height:none;width:250px;background:var(--surface);z-index:40;padding-top:calc(16px + env(safe-area-inset-top,0px));transform:translateX(-100%);transition:transform .2s}
+ nav.side.open{transform:none;box-shadow:var(--shadow)}
+ .tile{width:130px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+ <button class="icon-btn" id="menuBtn" aria-label="Open menu">☰</button>
+ <a class="logo" href="#home">sumzone</a>
+ <button class="icon-btn" id="favBtn" aria-label="Favourites">♥ <span id="favCount">0</span></button>
+ <button class="icon-btn" id="themeBtn" aria-label="Switch theme">◐</button>
+</header>
+<div class="layout">
+ <nav class="side" id="side" aria-label="Main"></nav>
+ <main id="main"></main>
+</div>
+<footer><a href="#home">About us</a><a href="#home">Copyright</a><a href="#home">Privacy policy</a><a href="#home">Terms of use</a><a href="#home">Contact us</a><span>© 2026 Sumzone</span></footer>
+
+<template id="src-cattle"><meta charset="utf-8"><meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0"><title>Cattle</title>
+<style>html,body,#canvas{margin:0;padding:0;border:0}body{color:#fff;background:#000;overflow:hidden;touch-action:none}#canvas{display:block}#canvas:focus{outline:none}#status,#status-splash,#status-progress{position:absolute;left:0;right:0}#status,#status-splash{top:0;bottom:0}#status{background:#000;display:flex;flex-direction:column;justify-content:center;align-items:center;visibility:hidden}#status-splash{max-height:100%;max-width:100%;margin:auto;height:100%;width:100%;object-fit:contain}#status-progress,#status-notice{display:none}#status-progress{bottom:10%;width:50%;margin:0 auto}#status-notice{background:#5b3943;border-radius:.5rem;border:1px solid #9b3943;color:#e0e0e0;font-family:Arial,sans-serif;line-height:1.3;margin:0 2rem;overflow:hidden;padding:1rem;text-align:center;z-index:1}</style>
+<script>
+const CDN_BASE='https://cdn.jsdelivr.net/gh/bubbls/cc3d-merge/';
+async function mergeSplitFiles(baseName,numParts){
+ const urls=[];for(let i=1;i<=numParts;i++)urls.push(CDN_BASE+baseName+'.part'+i);
+ const responses=await Promise.all(urls.map(u=>fetch(u)));
+ responses.forEach((r,i)=>{if(!r.ok)throw new Error('Failed to load '+urls[i]+': '+r.status)});
+ const buffers=await Promise.all(responses.map(r=>r.arrayBuffer()));
+ const total=buffers.reduce((a,b)=>a+b.byteLength,0);
+ const out=new Uint8Array(total);let off=0;
+ for(const b of buffers){out.set(new Uint8Array(b),off);off+=b.byteLength}
+ return out.buffer;
+}
+window.mergedFiles={pck:null,wasm:null};
+window.originalFetch=window.originalFetch||window.fetch;
+function waitFor(key,type){return new Promise(res=>{const t=setInterval(()=>{const d=window.mergedFiles[key];if(d){clearInterval(t);res(new Response(d,{status:200,statusText:'OK',headers:{'Content-Type':type,'Content-Length':d.byteLength}}))}},50)})}
+window.fetch=function(url,...args){const u=typeof url==='string'?url:url.toString();
+ if(u.includes('index.pck')&&!u.includes('.part'))return waitFor('pck','application/octet-stream');
+ if(u.includes('index.wasm')&&!u.includes('.part'))return waitFor('wasm','application/wasm');
+ return window.originalFetch.call(this,url,...args)};
+(async()=>{try{const[p,w]=await Promise.all([mergeSplitFiles('index.pck',3),mergeSplitFiles('index.wasm',3)]);window.mergedFiles.pck=p;window.mergedFiles.wasm=w}catch(e){console.error(e);alert('Failed to load files: '+e.message)}})();
+</script>
+<canvas id="canvas"></canvas>
+<div id="status"><img id="status-splash" src="https://cdn.jsdelivr.net/gh/bubbls/cc3d-merge/index.png" alt=""><progress id="status-progress"></progress><div id="status-notice"></div></div>
+<script src="https://cdn.jsdelivr.net/gh/bubbls/cc3d-merge/index.js"></script>
+<script>
+const GODOT_CONFIG={args:[],canvasResizePolicy:2,ensureCrossOriginIsolationHeaders:true,executable:'index',experimentalVK:false,fileSizes:{'index.pck':42336176,'index.wasm':43699190},focusCanvas:true,gdextensionLibs:[]};
+const GODOT_THREADS_ENABLED=false;
+const engine=new Engine(GODOT_CONFIG);
+(function(){
+ const ov=document.getElementById('status'),pr=document.getElementById('status-progress'),nt=document.getElementById('status-notice');
+ let init=true,mode='';
+ function setMode(m){if(mode===m||!init)return;if(m==='hidden'){ov.remove();init=false;return}ov.style.visibility='visible';pr.style.display=m==='progress'?'block':'none';nt.style.display=m==='notice'?'block':'none';mode=m}
+ function fail(err){console.error(err);nt.textContent=err instanceof Error?err.message:String(err);setMode('notice');init=false}
+ const missing=Engine.getMissingFeatures({threads:GODOT_THREADS_ENABLED});
+ if(missing.length){fail('Error: missing features required to run: '+missing.join(', '))}
+ else{setMode('progress');engine.startGame({onProgress:function(c,t){if(c>0&&t>0){pr.value=c;pr.max=t}else{pr.removeAttribute('value');pr.removeAttribute('max')}}}).then(()=>setMode('hidden'),fail)}
+})();
+</script></template>
+<template id="src-learn" data-raw><Module>
+
+
+<!-- Ultimate Game Stash file--> 
+<!-- For the regularly updating doc go to https://docs.google.com/document/d/1_FmH3BlSBQI7FGgAQL59-ZPe8eCxs35wel6JUyVaG8Q/ -->
+
+
+
+<Module>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>really cool flash game</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      height: 100%;
+      width: 100%;
+    }
+    #flash-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: black;
+      overflow: hidden;
+    }
+    .black-box {
+      position: fixed;
+      background: black;
+      z-index: 10;
+    }
+    #box-top {
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 0;
+    }
+    #box-bottom {
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0;
+    }
+    #box-left {
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 100%;
+    }
+    #box-right {
+      top: 0;
+      right: 0;
+      width: 0;
+      height: 100%;
+    }
+    ruffle-player {
+      width: 100%;
+      height: 100%;
+      background: black;
+      display: block;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@ruffle-rs/ruffle@0.5.0-nightly.2026.8.1/ruffle.min.js"></script>
+</head>
+<body>
+  <div id="flash-container"></div>
+  <div class="black-box" id="box-left"></div>
+  <div class="black-box" id="box-right"></div>
+  <script>
+  alert("Known issue: The game can lag heavily when stages/boosters have a smoke or trail effect. This can be mitigated by enabling Ultra Low in the Options at the main menu.");
+    const container = document.getElementById("flash-container");
+    const boxTop = document.getElementById("box-top");
+    const boxBottom = document.getElementById("box-bottom");
+    const boxLeft = document.getElementById("box-left");
+    const boxRight = document.getElementById("box-right");
+    
+    function resizeGame() {
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      const aspectRatio = 5.5 / 3;
+      
+      // Use 95% of available space instead of 100%
+      let width = Math.floor(windowWidth * 1);
+      let height = Math.floor(width / aspectRatio);
+      
+      if (height > windowHeight * 1) {
+        height = Math.floor(windowHeight * 1);
+        width = Math.floor(height * aspectRatio);
+      }
+      
+      container.style.width = `${width}px`;
+      container.style.height = `${height}px`;
+      
+      // Calculate margins
+      const topMargin = (windowHeight - height) / 2;
+      const leftMargin = (windowWidth - width) / 2;
+      
+      // Set black box sizes
+      boxTop.style.height = `${topMargin}px`;
+      boxBottom.style.height = `${topMargin}px`;
+      boxLeft.style.width = `${leftMargin}px`;
+      boxRight.style.width = `${leftMargin}px`;
+    }
+    
+    window.addEventListener("resize", resizeGame);
+    window.addEventListener("DOMContentLoaded", () => {
+      resizeGame();
+      const ruffle = window.RufflePlayer?.newest() || window.RufflePlayer?.createPlayer();
+      if (ruffle && container) {
+        const player = ruffle.createPlayer();
+        player.style.width = "100%";
+        player.style.height = "100%";
+        player.style.background = "black";
+        container.appendChild(player);
+        player.load("$1");
+      } else {
+        container.textContent = "Ruffle failed to load."; 
+      }
+    });
+  </script>
+    <param name="movie" value="https://cdn.jsdelivr.net/gh/Magixxz/embeds@a9ae99acf7e9feb974b973c9331282ae025754ce/Learn-To-Fly-3.swf">
+    <embed src="https://cdn.jsdelivr.net/gh/Magixxz/embeds@a9ae99acf7e9feb974b973c9331282ae025754ce/Learn-To-Fly-3.swf" width="100%" height="100%">
+</body>
+</html>
+]]></Content>
+</Module></template>
+<template id="src-balloons" data-raw><Module>
+
+
+<!-- Ultimate Game Stash file--> 
+<!-- For the regularly updating doc go to https://docs.google.com/document/d/1_FmH3BlSBQI7FGgAQL59-ZPe8eCxs35wel6JUyVaG8Q/ -->
+
+
+
+<Module>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>really cool flash game</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
+    }
+    #flash-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: black;
+      overflow: hidden;
+    }
+    .black-box {
+      position: fixed;
+      background: black;
+      z-index: 10;
+    }
+    #box-top {
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 0;
+    }
+    #box-bottom {
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0;
+    }
+    #box-left {
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 100%;
+    }
+    #box-right {
+      top: 0;
+      right: 0;
+      width: 0;
+      height: 100%;
+    }
+    ruffle-player {
+      width: 100%;
+      height: 100%;
+      background: black;
+      display: block;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@ruffle-rs/ruffle@0.2.0-nightly.2025.10.2/ruffle.min.js"></script>
+</head>
+<body>
+  <div id="flash-container"></div>
+  <div class="black-box" id="box-top"></div>
+  <div class="black-box" id="box-bottom"></div>
+  <div class="black-box" id="box-left"></div>
+  <div class="black-box" id="box-right"></div>
+  <script>
+    const container = document.getElementById("flash-container");
+    const boxTop = document.getElementById("box-top");
+    const boxBottom = document.getElementById("box-bottom");
+    const boxLeft = document.getElementById("box-left");
+    const boxRight = document.getElementById("box-right");
+    
+    function resizeGame() {
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      const aspectRatio = 5.5 / 3;
+      
+      // Use 95% of available space instead of 100%
+      let width = Math.floor(windowWidth * 1);
+      let height = Math.floor(width / aspectRatio);
+      
+      if (height > windowHeight * 1) {
+        height = Math.floor(windowHeight * 1);
+        width = Math.floor(height * aspectRatio);
+      }
+      
+      container.style.width = `${width}px`;
+      container.style.height = `${height}px`;
+      
+      // Calculate margins
+      const topMargin = (windowHeight - height) / 2;
+      const leftMargin = (windowWidth - width) / 2;
+      
+      // Set black box sizes
+      boxTop.style.height = `${topMargin}px`;
+      boxBottom.style.height = `${topMargin}px`;
+      boxLeft.style.width = `${leftMargin}px`;
+      boxRight.style.width = `${leftMargin}px`;
+    }
+    
+    window.addEventListener("resize", resizeGame);
+    window.addEventListener("DOMContentLoaded", () => {
+      resizeGame();
+      const ruffle = window.RufflePlayer?.newest() || window.RufflePlayer?.createPlayer();
+      if (ruffle && container) {
+        const player = ruffle.createPlayer();
+        player.style.width = "100%";
+        player.style.height = "100%";
+        player.style.background = "black";
+        container.appendChild(player);
+        player.load("$1");
+      } else {
+        container.textContent = "Ruffle failed to load."; 
+      }
+    });
+  </script>
+    <param name="movie" value="https://cdn.jsdelivr.net/gh/QiProject/flash-games@8a30ea684498b868a7b1cd188bd860ba2042eb56/Bloons-Tower-Defense-4.swf">
+    <embed src="https://cdn.jsdelivr.net/gh/QiProject/flash-games@8a30ea684498b868a7b1cd188bd860ba2042eb56/Bloons-Tower-Defense-4.swf" width="100%" height="100%">
+</body>
+</html>
+]]></Content>
+</Module></template>
+<dialog id="dlg">
+ <div class="dlg-head"><h3 id="dlgTitle"></h3><button class="icon-btn" id="dlgFav" aria-label="Favourite">♥</button><button class="icon-btn" id="dlgClose" aria-label="Close">✕</button></div>
+ <div class="stage" id="stage"></div>
+</dialog>
+
+<script>
+var POGO='<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><path d="M6 3h12M12 3v10M8 12h8M12 13l-3 1.5 6 2-6 2 3 1.5M12 21v2"/></svg>';
+var CATS={
+ driving:{label:"Driving",icon:"🚗",items:["Kart"]},
+ casual:{label:"Casual",icon:"🐍",items:["Snake Apple"]},
+ animals:{label:"Animals",icon:"🐑",items:["Cattle"]},
+ flash:{label:"Flash",icon:"🐧",items:["Learn"]},
+ strategy:{label:"Strategy",icon:"🎈",items:["Balloons"]},
+ platformer:{label:"Platformer",icon:POGO,items:["Pogo"]}
+};
+var ALL=[],BY={};
+Object.keys(CATS).forEach(function(k){CATS[k].items.forEach(function(n,i){
+ var id=n.toLowerCase().replace(/[^a-z0-9]+/g,"-");
+ if(BY[id])return;
+ var h=0;for(var c=0;c<id.length;c++)h=(h*31+id.charCodeAt(c))%360;
+ var g={id:id,name:n,cat:k,icon:CATS[k].icon,hue:h,hot:i<2,isNew:i>=6};
+ BY[id]=g;ALL.push(g);
+});});
+
+function load(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+var favs=load("zingo_favs",[]),recent=load("zingo_recent",[]);
+var view=(location.hash||"#home").slice(1);
+
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function art(g){return "background:linear-gradient(135deg,hsl("+g.hue+",42%,44%),hsl("+((g.hue+50)%360)+",42%,32%))"}
+function tile(g){
+ var f=favs.indexOf(g.id)>-1;
+ return '<div class="tile-wrap" style="display:contents"><div class="tile" data-id="'+g.id+'" role="button" tabindex="0" aria-label="Play '+esc(g.name)+'">'+
+ '<div class="art" style="'+art(g)+'">'+g.icon+'</div>'+
+ (g.hot?'<span class="badge hot">Hot</span>':g.isNew?'<span class="badge new">New</span>':'')+
+ '<button class="heart'+(f?' on':'')+'" data-fav="'+g.id+'" aria-label="Favourite '+esc(g.name)+'">♥</button>'+
+ '<div class="name">'+esc(g.name)+'</div></div></div>';
+}
+function rowOf(title,list,href){
+ return '<section class="row"><div class="row-head"><h2>'+(href?'<a href="'+href+'">'+title+'</a>':title)+'</h2><div class="arrows"><button data-sc="-1" aria-label="Scroll left">‹</button> <button data-sc="1" aria-label="Scroll right">›</button></div></div><div class="scroller">'+list.map(tile).join("")+'</div></section>';
+}
+function byIds(ids){return ids.map(function(i){return BY[i]}).filter(Boolean)}
+
+function nav(){
+ var h='<a href="#home" class="'+(view=="home"?"on":"")+'">🏠 Home</a><a href="#recent" class="'+(view=="recent"?"on":"")+'">🕘 Recently played</a><hr>';
+ Object.keys(CATS).forEach(function(k){h+='<a href="#'+k+'" class="'+(view==k?"on":"")+'">'+CATS[k].icon+' '+CATS[k].label+'</a>'});
+ document.getElementById("side").innerHTML=h;
+}
+function render(){
+ nav();
+ var m=document.getElementById("main"),h="";
+ document.getElementById("favCount").textContent=favs.length;
+ if(view=="home"||!(CATS[view]||view=="recent"||view=="favs")){
+  var hot=ALL.filter(function(g){return g.hot}),nw=ALL.filter(function(g){return g.isNew});
+  h='<h1>Free online play</h1><p class="sub">No downloads, no sign-up. Pick a tile and start.</p>'+
+   rowOf("Hot this week",hot)+(nw.length?rowOf("New",nw):"");
+  Object.keys(CATS).forEach(function(k){h+=rowOf(CATS[k].label,ALL.filter(function(g){return g.cat==k}),"#"+k)});
+  h+='<div class="seo"><h2>Play free in your browser</h2><p>Sumzone is a free place to play quick browser titles on desktop, tablet and phone. Nothing to install and no account to make. Your favourites and recent plays stay on your device.</p></div>';
+ }else if(view=="recent"){
+  var r=byIds(recent);
+  h='<h1>Recently played</h1><p class="sub">Your last '+(r.length||"few")+' picks.</p>'+(r.length?'<div class="grid">'+r.map(tile).join("")+'</div>':'<div class="empty">Nothing yet. Play something and it will show up here.</div>');
+ }else if(view=="favs"){
+  var f=byIds(favs);
+  h='<h1>Favourites</h1><p class="sub">Tap the heart on any tile to save it here.</p>'+(f.length?'<div class="grid">'+f.map(tile).join("")+'</div>':'<div class="empty">No favourites yet. Tap the heart on a tile to add one.</div>');
+ }else{
+  h='<h1>'+CATS[view].icon+' '+CATS[view].label+'</h1><p class="sub">'+CATS[view].items.length+' picks</p><div class="grid">'+ALL.filter(function(g){return g.cat==view}).map(tile).join("")+'</div>';
+ }
+ m.innerHTML=h;
+}
+function setView(v){view=v;render();window.scrollTo(0,0);document.getElementById("side").classList.remove("open")}
+window.addEventListener("hashchange",function(){setView((location.hash||"#home").slice(1))});
+
+var dlg=document.getElementById("dlg"),cur=null;
+function openGame(id){
+ var g=BY[id];if(!g)return;cur=g;
+ recent=[id].concat(recent.filter(function(x){return x!=id})).slice(0,24);save("zingo_recent",recent);
+ document.getElementById("dlgTitle").textContent=g.name;
+ var st=document.getElementById("stage");st.style.cssText=art(g);
+ st.innerHTML='<div><b>'+g.icon+'</b>'+esc(g.name)+'<br><br><button id="fsBtn" style="font-family:monospace;border:0;border-radius:5px;background:#1E90FF;color:#fff;padding:12px 46px;font-size:20px;cursor:pointer">PLAY FULLSCREEN</button></div>';
+ document.getElementById("fsBtn").onclick=playFull;
+ var wide=g.id=="pogo";dlg.classList.toggle("wide",wide);
+ if(wide){st.style.cssText="aspect-ratio:auto;height:min(700px,78vh);padding:0;background:#000;overflow:hidden";st.innerHTML='<iframe src="'+new URL("pogo.html",location.href).href+'" style="width:100%;height:100%;border:0" allow="fullscreen; autoplay"></iframe>'}
+ syncDlgFav();
+ if(dlg.showModal)dlg.showModal();else dlg.setAttribute("open","");
+}
+var GAME_URLS={"snake-apple":"https://script.google.com/macros/s/AKfycbymKWcUrgUql0KiwDqccDBMbYJB8_gxtlKCbQ5C6lfGB90kOJh4MpLqhMGWjtF7TyBskw/exec","kart":"https://script.google.com/macros/s/AKfycbxb8isaXXwqY7h3OqafbfonnaOEmyfyK8ZQoMvgT-HGwUSfpJoK5Aim1Ca3fvKvEqxj/exec"};
+GAME_URLS["pogo"]="pogo.html";
+var gameWins={};
+function playFull(){
+ var id=cur.id,GAME_URL=GAME_URLS[id]&&new URL(GAME_URLS[id],location.href).href,gameWin=gameWins[id];
+ if(gameWin&&!gameWin.closed){gameWin.focus();return}
+ gameWin=gameWins[id]=window.open();
+ if(!gameWin){alert("The new tab was blocked. Allow pop-ups for this page and try again.");return}
+ gameWin.document.body.style.margin="0";
+ gameWin.document.body.style.height="100vh";
+ var f=gameWin.document.createElement("iframe");
+ f.style.cssText="border:none;width:100%;height:100%;margin:0";
+ var tpl=document.getElementById("src-"+id);
+ if(tpl)f.srcdoc=(tpl.hasAttribute("data-raw")?"":"<!DOCTYPE html><html lang=\"en\"><head>")+tpl.innerHTML;else f.src=GAME_URL;
+ gameWin.document.body.appendChild(f);
+}
+function syncDlgFav(){var b=document.getElementById("dlgFav");var on=cur&&favs.indexOf(cur.id)>-1;b.style.background=on?"var(--accent)":"";b.style.color=on?"#fff":""}
+function toggleFav(id){
+ var i=favs.indexOf(id);if(i>-1)favs.splice(i,1);else favs.push(id);
+ save("zingo_favs",favs);
+ document.getElementById("favCount").textContent=favs.length;
+ document.querySelectorAll('[data-fav="'+id+'"]').forEach(function(b){b.classList.toggle("on",favs.indexOf(id)>-1)});
+ syncDlgFav();if(view=="favs")render();
+}
+document.addEventListener("click",function(e){
+ var t=e.target;
+ var fb=t.closest("[data-fav]");if(fb){e.stopPropagation();toggleFav(fb.getAttribute("data-fav"));return}
+ var sc=t.closest("[data-sc]");if(sc){var s=sc.closest(".row").querySelector(".scroller");s.scrollBy({left:s.clientWidth*.8*sc.getAttribute("data-sc"),behavior:"smooth"});return}
+ var tl=t.closest(".tile");if(tl){openGame(tl.getAttribute("data-id"))}
+});
+document.addEventListener("keydown",function(e){
+ if((e.key=="Enter"||e.key==" ")&&e.target.classList&&e.target.classList.contains("tile")){e.preventDefault();openGame(e.target.getAttribute("data-id"))}
+});
+document.getElementById("dlgClose").onclick=function(){dlg.close()};
+document.getElementById("dlgFav").onclick=function(){if(cur)toggleFav(cur.id)};
+dlg.addEventListener("close",function(){document.getElementById("stage").innerHTML="";if(view=="recent")render()});
+document.getElementById("favBtn").onclick=function(){location.hash="favs"};
+document.getElementById("menuBtn").onclick=function(){document.getElementById("side").classList.toggle("open")};
+document.getElementById("themeBtn").onclick=function(){
+ var r=document.documentElement,dark=r.getAttribute("data-theme")?r.getAttribute("data-theme")=="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+ var n=dark?"light":"dark";r.setAttribute("data-theme",n);save("zingo_theme",n);
+};
+var th=load("zingo_theme",null);if(th)document.documentElement.setAttribute("data-theme",th);
+render();
+</script>
+</body>
+</html>
